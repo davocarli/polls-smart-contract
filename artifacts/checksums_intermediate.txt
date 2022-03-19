@@ -1,1 +1,1 @@
-d76a571e42942709a7f6a15dae7dfae77cda301ed59a4b50c4c6bb5b813510df  ./target/wasm32-unknown-unknown/release/counter.wasm
+db7b8516cc9645584f7c26c31af3f61df89d3f1fa8ca566268996a7b3ed43e3b  ./target/wasm32-unknown-unknown/release/polls.wasm
