@@ -9,19 +9,26 @@
     "options": {
       "type": "array",
       "items": {
-        "type": "array",
-        "items": [
-          {
-            "type": "integer",
-            "format": "uint8",
-            "minimum": 0.0
-          },
-          {
-            "type": "string"
-          }
-        ],
-        "maxItems": 2,
-        "minItems": 2
+        "$ref": "#/definitions/PollOption"
+      }
+    }
+  },
+  "definitions": {
+    "PollOption": {
+      "type": "object",
+      "required": [
+        "index",
+        "text"
+      ],
+      "properties": {
+        "index": {
+          "type": "integer",
+          "format": "uint8",
+          "minimum": 0.0
+        },
+        "text": {
+          "type": "string"
+        }
       }
     }
   }

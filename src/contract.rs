@@ -4,7 +4,7 @@ use cosmwasm_std::{to_binary, Binary, Deps, DepsMut, Env, MessageInfo, Response,
 use cw2::set_contract_version;
 
 use crate::error::ContractError;
-use crate::msg::{VotesResponse, OptionsResponse, QuestionResponse, WinnerResponse, ExecuteMsg, InstantiateMsg, QueryMsg};
+use crate::msg::{VotesResponse, OptionsResponse, QuestionResponse, WinnerResponse, ExecuteMsg, InstantiateMsg, QueryMsg, PollVote, PollOption};
 use crate::state::{Config, STATE, VOTES};
 
 // version info for migration info
@@ -169,10 +169,10 @@ fn query_votes(deps: Deps) -> StdResult<VotesResponse> {
             let voted_option = vote.1;
             let address_bytes = vote.0;
             let address = String::from_utf8(address_bytes).unwrap();
-            formatted_votes.push((
-                address,
-                voted_option,
-            ));
+            formatted_votes.push(PollVote { 
+                address: address,
+                vote: voted_option,
+            });
         }
     }
     Ok(VotesResponse { votes: formatted_votes })
@@ -192,7 +192,12 @@ fn query_options(deps: Deps) -> StdResult<OptionsResponse> {
     for option in state.options.iter() {
         // Using a counter instead of enumerate() because
         // enumerate will provide a usize type, and not u8
-        result.push((counter.clone(), option.to_owned()));
+        result.push(
+            PollOption {
+                text: option.to_owned(),
+                index: counter.clone(),
+            }
+        );
         counter = counter + 1;
     }
     Ok(OptionsResponse { options: result })
@@ -240,15 +245,15 @@ mod tests {
         let res = query(deps.as_ref(), mock_env(), QueryMsg::GetOptions {}).unwrap();
         let value: OptionsResponse = from_binary(&res).unwrap();
         assert_eq!(value.options, vec![
-            (0, String::from("LUNA")),
-            (1, String::from("UST")),
-            (2, String::from("aUST")),
+            PollOption { text: String::from("LUNA"), index: 0 },
+            PollOption { text: String::from("UST"), index: 1 },
+            PollOption { text: String::from("aUST"), index: 2 },
         ]);
 
         // Query votes - should have 1 registered voter (creator) with no vote
         let res = query(deps.as_ref(), mock_env(), QueryMsg::GetVotes {}).unwrap();
         let value: VotesResponse = from_binary(&res).unwrap();
-        assert_eq!(value.votes, vec![(String::from("creator"), None)]);
+        assert_eq!(value.votes, vec![PollVote { address: String::from("creator"), vote: None }]);
     }
 
     #[test]
@@ -276,7 +281,7 @@ mod tests {
         // Query votes
         let res = query(deps.as_ref(), mock_env(), QueryMsg::GetVotes {}).unwrap();
         let value: VotesResponse = from_binary(&res).unwrap();
-        assert_eq!(value.votes, vec![(String::from("creator"), Some(1))]);
+        assert_eq!(value.votes, vec![PollVote { address: String::from("creator"), vote: Some(1) }]);
     }
 
     #[test]
@@ -317,9 +322,9 @@ mod tests {
         let res = query(deps.as_ref(), mock_env(), QueryMsg::GetVotes {}).unwrap();
         let value: VotesResponse = from_binary(&res).unwrap();
         assert_eq!(value.votes, vec![
-            (String::from("creator"), None),
-            (String::from("voter1"), None),
-            (String::from("voter2"), None),
+            PollVote { address: String::from("creator"), vote: None },
+            PollVote { address: String::from("voter1"), vote: None },
+            PollVote { address: String::from("voter2"), vote: None },
         ]);
 
         // Everyone votes
@@ -331,9 +336,9 @@ mod tests {
         let res = query(deps.as_ref(), mock_env(), QueryMsg::GetVotes {}).unwrap();
         let value: VotesResponse = from_binary(&res).unwrap();
         assert_eq!(value.votes, vec![
-            (String::from("creator"), Some(0)),
-            (String::from("voter1"), Some(1)),
-            (String::from("voter2"), Some(0)),
+            PollVote { address: String::from("creator"), vote: Some(0) },
+            PollVote { address: String::from("voter1"), vote: Some(1) },
+            PollVote { address: String::from("voter2"), vote: Some(0) },
         ]);
     }
 

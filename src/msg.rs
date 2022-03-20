@@ -34,10 +34,22 @@ pub enum QueryMsg {
     GetWinner {},
 }
 
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
+pub struct PollVote {
+    pub address: String,
+    pub vote: Option<u8>,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
+pub struct PollOption{
+    pub text: String,
+    pub index: u8,
+}
+
 // We define a custom struct for each query response
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 pub struct VotesResponse {
-    pub votes: Vec<(String, Option<u8>)>,
+    pub votes: Vec<PollVote>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
@@ -47,7 +59,7 @@ pub struct QuestionResponse {
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 pub struct OptionsResponse {
-    pub options: Vec<(u8, String)>,
+    pub options: Vec<PollOption>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
