@@ -5,10 +5,46 @@
     {
       "type": "object",
       "required": [
-        "get_count"
+        "get_question"
       ],
       "properties": {
-        "get_count": {
+        "get_question": {
+          "type": "object"
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "get_votes"
+      ],
+      "properties": {
+        "get_votes": {
+          "type": "object"
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "get_options"
+      ],
+      "properties": {
+        "get_options": {
+          "type": "object"
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "get_winner"
+      ],
+      "properties": {
+        "get_winner": {
           "type": "object"
         }
       },

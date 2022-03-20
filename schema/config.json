@@ -1,18 +1,32 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "State",
+  "title": "Config",
   "type": "object",
   "required": [
-    "count",
-    "owner"
+    "options",
+    "owner",
+    "question"
   ],
   "properties": {
-    "count": {
-      "type": "integer",
-      "format": "int32"
+    "options": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
     },
     "owner": {
       "$ref": "#/definitions/Addr"
+    },
+    "question": {
+      "type": "string"
+    },
+    "winner": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "format": "uint",
+      "minimum": 0.0
     }
   },
   "definitions": {

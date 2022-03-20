@@ -3,12 +3,18 @@
   "title": "InstantiateMsg",
   "type": "object",
   "required": [
-    "count"
+    "options",
+    "question"
   ],
   "properties": {
-    "count": {
-      "type": "integer",
-      "format": "int32"
+    "options": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "question": {
+      "type": "string"
     }
   }
 }
