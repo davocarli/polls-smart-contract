@@ -36,7 +36,7 @@
           "properties": {
             "index": {
               "type": "integer",
-              "format": "uint",
+              "format": "uint8",
               "minimum": 0.0
             }
           }

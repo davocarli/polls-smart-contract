@@ -1,5 +1,3 @@
-use std::convert::TryInto;
-
 #[cfg(not(feature = "library"))]
 use cosmwasm_std::entry_point;
 use cosmwasm_std::{to_binary, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult, Order, Addr};
@@ -80,7 +78,7 @@ pub fn register_user(deps: DepsMut, info: MessageInfo, address: Addr) -> Result<
     Ok(Response::new().add_attribute("method", "register_user"))
 }
 
-pub fn try_vote(deps: DepsMut, info: MessageInfo, index: usize) -> Result<Response, ContractError> {
+pub fn try_vote(deps: DepsMut, info: MessageInfo, index: u8) -> Result<Response, ContractError> {
     let state = STATE.load(deps.storage).unwrap();
 
     if let Some(_) = state.winner {
@@ -112,7 +110,8 @@ pub fn try_close(deps: DepsMut, info: MessageInfo) -> Result<Response, ContractE
         Ok(all_votes) => {
             for vote in all_votes {
                 if let Some(i) = vote.1 {
-                    vote_counts[i] = vote_counts[i] + 1;
+                    let idx = usize::from(i);
+                    vote_counts[idx] = vote_counts[idx] + 1;
                 }
             }
         },
@@ -120,7 +119,16 @@ pub fn try_close(deps: DepsMut, info: MessageInfo) -> Result<Response, ContractE
     }
 
     let max_value = vote_counts.iter().max().unwrap();
-    let max_index = vote_counts.iter().position(|v| v == max_value).unwrap();
+
+    let mut counter: Option<u8> = None;
+
+    let _ = vote_counts.iter().position(|v| {
+        match counter {
+            None => counter = Some(0),
+            Some(i) => counter = Some(i+1),
+        }
+        v == max_value
+    }).unwrap();
     
     STATE.update(deps.storage, |mut state| -> Result<_, ContractError> {
         if let Some(_) = state.winner {
@@ -132,7 +140,7 @@ pub fn try_close(deps: DepsMut, info: MessageInfo) -> Result<Response, ContractE
             return Err(ContractError::Unauthorized {});
         }
 
-        state.winner = Some(max_index);
+        state.winner = counter;
 
         Ok(state)
     })?;
@@ -179,9 +187,13 @@ fn query_options(deps: Deps) -> StdResult<OptionsResponse> {
     let state = STATE.load(deps.storage)?;
 
     let mut result = vec![];
+    let mut counter: u8 = 0;
 
-    for (idx, option) in state.options.iter().enumerate() {
-        result.push((idx, option.to_owned()));
+    for option in state.options.iter() {
+        // Using a counter instead of enumerate() because
+        // enumerate will provide a usize type, and not u8
+        result.push((counter.clone(), option.to_owned()));
+        counter = counter + 1;
     }
     Ok(OptionsResponse { options: result })
 }
@@ -191,7 +203,7 @@ fn query_winner(deps: Deps) -> StdResult<WinnerResponse> {
 
     match state.winner {
         None => Ok(WinnerResponse { index: None, winner: None }),
-        Some(index) => Ok(WinnerResponse { index: Some(index.try_into().unwrap()), winner: Some(state.options.get(index as usize).unwrap().clone())}),
+        Some(index) => Ok(WinnerResponse { index: Some(index), winner: Some(state.options.get(index as usize).unwrap().clone())}),
     }
 }
 

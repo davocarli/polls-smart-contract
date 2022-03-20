@@ -13,8 +13,8 @@ pub struct Config {
     // The options for voting
     pub options: Vec<String>,
     // Store the winner of the poll
-    pub winner: Option<usize>,
+    pub winner: Option<u8>,
 }
 
 pub const STATE: Item<Config> = Item::new("state");
-pub const VOTES: Map<&Addr, Option<usize>> = Map::new("votes");
+pub const VOTES: Map<&Addr, Option<u8>> = Map::new("votes");

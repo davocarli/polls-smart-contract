@@ -7,7 +7,7 @@ pub struct InstantiateMsg {
     // The poll question to be stored on-chain
     pub question: String,
     // Vector of strings representing poll options
-    pub options: Vec<String>,
+    pub options: Vec<String>, 
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
@@ -16,7 +16,7 @@ pub enum ExecuteMsg {
     // Register a new voter - can only be called by owner
     Register { address: Addr },
     // Submit a vote
-    Vote { index: usize },
+    Vote { index: u8 },
     // Close voting - can only be called by owner
     End  {},
 }
@@ -37,7 +37,7 @@ pub enum QueryMsg {
 // We define a custom struct for each query response
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 pub struct VotesResponse {
-    pub votes: Vec<(String, Option<usize>)>,
+    pub votes: Vec<(String, Option<u8>)>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
@@ -47,7 +47,7 @@ pub struct QuestionResponse {
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 pub struct OptionsResponse {
-    pub options: Vec<(usize, String)>,
+    pub options: Vec<(u8, String)>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
@@ -55,3 +55,6 @@ pub struct WinnerResponse {
     pub index: Option<u8>,
     pub winner: Option<String>,
 }
+
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
+pub struct EmptyResponse {}
